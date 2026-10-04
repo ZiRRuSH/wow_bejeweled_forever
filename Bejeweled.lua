@@ -1,5 +1,5 @@
 local Bejeweled = Bejeweled or {}
-Bejeweled.version = "Version 12.1.0"
+Bejeweled.version = "Version 1.60.1"
 Bejeweled.splashDisplayTime = 2
 local t = "Interface\\AddOns\\Bejeweled"
 local l = "Interface\\AddOns\\Bejeweled\\images\\"
