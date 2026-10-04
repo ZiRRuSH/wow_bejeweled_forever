@@ -1,3 +1,6 @@
+***  THIS IS JUST A PERSONAL FORK TO ADD SUPPORT FOR THE CURRENT WOW FOREVER BETA INTERFACE UNTIL THE MAIN PROJECT ADOPTS SUPPORT
+***  BELOW IS THE ORIGINAL README FROM THE MAIN PROJECT:
+
 # Bejeweled for World of Warcraft
 
 Bejeweled has returned to Azeroth! A game originally made by PopCap Games, Inc., maintained for modern World of Warcraft clients.
