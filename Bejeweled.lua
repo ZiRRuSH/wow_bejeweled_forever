@@ -1613,7 +1613,12 @@ function Bejeweled:VariablesLoaded()
     BejeweledProfile.skill.guildList = BejeweledProfile.skill.guildList or { c = 0 }
     Bejeweled:UpdateSavedVariablesDatabase()
     Bejeweled:Initialize_OptionsScreen()
-    Bejeweled:LoadAchievementEvents()
+
+    -- WoW Forever compatibility: this legacy Feats of Skill watcher dynamically
+    -- registers protected gameplay events and triggers ADDON_ACTION_FORBIDDEN.
+    -- The minigame itself does not depend on this optional tracking system.
+    -- Bejeweled:LoadAchievementEvents()
+
     Bejeweled.LoadAchievementEvents = nil
     Bejeweled.Initialize_OptionsScreen = nil
     Bejeweled.CreateCheckbox = nil
@@ -2379,6 +2384,17 @@ end
 
 function Bejeweled:Print(o, n, e, t)
     DEFAULT_CHAT_FRAME:AddMessage(o, n, e, t)
+end
+
+-- WoW Forever compatibility: Retail no longer exposes MouseIsOver as a global.
+function Bejeweled:MouseIsOver(frame)
+    if MouseIsOver then
+        return MouseIsOver(frame)
+    end
+    if C_WidgetUtil and C_WidgetUtil.IsMouseOverFrame then
+        return C_WidgetUtil.IsMouseOverFrame(frame)
+    end
+    return false
 end
 
 local function Se(t)
@@ -5085,7 +5101,7 @@ local function O()
         if (t.mouseOverElapsed > .5) and (BejeweledData.legalDisplayed) then
             t.mouseOverElapsed = 0
             if t.mouseOver and not Bejeweled.window.hiding then
-                if not MouseIsOver(Bejeweled.window.mouseBounds) then
+                if not Bejeweled:MouseIsOver(Bejeweled.window.mouseBounds) then
                     if not Bejeweled.window.resizing then
                         t.waitMouseOver = nil
                         Bejeweled.const.windowFadeOut.fadeTimer = 0
@@ -5100,7 +5116,7 @@ local function O()
                 end
             end
             if (t.waitMouseOver) then
-                if MouseIsOver(Bejeweled.window.mouseBounds) then
+                if Bejeweled:MouseIsOver(Bejeweled.window.mouseBounds) then
                     Bejeweled.window.mouseOverScreen:Hide()
                     t.waitMouseOver = nil
                     t.mouseOver = true;
@@ -5234,7 +5250,7 @@ local function E()
                 end
             else
                 t:SetAlpha(BejeweledProfile.settings.mouseoffAlpha);
-                if not MouseIsOver(t) then
+                if not Bejeweled:MouseIsOver(t) then
                     t.mouseOverScreen:Show()
                     Bejeweled.sound.mouseOver = nil;
                     Bejeweled.sound:Hide();
@@ -5326,7 +5342,7 @@ local function g()
     t:SetScript("OnShow", function(t)
         Bejeweled.isShown = true
         Bejeweled.window:SetAlpha(BejeweledProfile.settings.gameAlpha)
-        if not MouseIsOver(Bejeweled.window) then
+        if not Bejeweled:MouseIsOver(Bejeweled.window) then
             Bejeweled.sound.waitMouseOver = true
             Bejeweled.sound.mouseOver = nil
         else
