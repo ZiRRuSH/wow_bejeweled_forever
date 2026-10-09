@@ -1,42 +1,36 @@
-***  THIS IS JUST A PERSONAL FORK TO ADD SUPPORT FOR THE CURRENT WOW FOREVER BETA INTERFACE UNTIL THE MAIN PROJECT ADOPTS SUPPORT.  BELOW IS THE ORIGINAL README FROM THE MAIN PROJECT:
+# Bejeweled for World of Warcraft Forever
 
-# Bejeweled for World of Warcraft
+This is my personal fork of [Nighthawk42's Bejeweled addon](https://github.com/Nighthawk42/wow_bejeweled), with compatibility fixes for WoW Forever.
 
-Bejeweled has returned to Azeroth! A game originally made by PopCap Games, Inc., maintained for modern World of Warcraft clients.
+Full credit goes to PopCap Games, Inc. for the original game and addon, and to [Nighthawk42](https://github.com/Nighthawk42/wow_bejeweled) and the upstream contributors for maintaining it for modern WoW clients. This fork simply adds WoW Forever support until the upstream project implements support.
 
-## Client Branches
+For other WoW clients, please use the [original project](https://github.com/Nighthawk42/wow_bejeweled).
 
-The repository is organized into dedicated branches for each World of Warcraft client flavor:
+## WoW Forever Changes
 
-| Branch | Client Flavor | Interface Version | Notes |
-|---|---|---|---|
-| [`mainline`](https://github.com/Nighthawk42/wow_bejeweled/tree/mainline) | **Retail / Mainline** | `120100`, `120001` | Midnight / The War Within (Default) |
-| [`mists`](https://github.com/Nighthawk42/wow_bejeweled/tree/mists) | **Mists of Pandaria Classic** | `50504` | Classic Progression |
-| [`tbc`](https://github.com/Nighthawk42/wow_bejeweled/tree/tbc) | **TBC Classic / Anniversary** | `20506`, `20505` | Classic Anniversary Edition |
-| [`vanilla`](https://github.com/Nighthawk42/wow_bejeweled/tree/vanilla) | **Classic Era / Vanilla** | `11509`, `11508` | World of Warcraft Classic |
-| [`wrath`](https://github.com/Nighthawk42/wow_bejeweled/tree/wrath) | **Wrath of the Lich King** | `38002`, `30405` | Titan Reforged / Wrath |
-| [`cata`](https://github.com/Nighthawk42/wow_bejeweled/tree/cata) | **Cataclysm Classic** | `40402`, `40400` | Cataclysm Classic |
+- Updated the addon to load on WoW Forever.
+- Fixed errors when opening the game and moving the cursor in or out of the window.
+- Updated guild rank-up announcements and manual score bragging for modern API.
+- Fixed minimap icon compatibility (ie. EllesmereUI's AddOn Bag).
+- Disabled legacy world-event skill achievements that caused restricted-event errors. Game-based skill progression remains available.
 
 ## Installation
 
-1. Download the archive for your client's branch or release.
-2. Place the `Bejeweled` folder into your game's `Interface/AddOns/` directory:
-   - `World of Warcraft/_retail_/Interface/AddOns/Bejeweled` (Retail)
-   - `World of Warcraft/_classic_/Interface/AddOns/Bejeweled` (Classic)
-   - `World of Warcraft/_classic_era_/Interface/AddOns/Bejeweled` (Vanilla)
+1. Download this fork.
+2. Place the `Bejeweled` folder in your WoW Forever client's `Interface/AddOns/` directory.
+3. Restart the game and enable the addon.
 
-## Feedback & Contributions
-
-- If you encounter bugs, please report them with detailed error messages/traces.
-- Contributions and Pull Requests are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for our multi-branch workflow and guidelines.
+Open the game with `/bej` or `/bejeweled`.
 
 ## Documentation & License
 
-- [Contributing Guide](CONTRIBUTING.md)
+- [Upstream Project](https://github.com/Nighthawk42/wow_bejeweled)
 - [Changelog](CHANGELOG.md)
 - [Acknowledgements](ACKNOWLEDGEMENT.md)
 - [License (MIT)](LICENSE)
 
 ---
+
+Support the upstream maintainers:
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P21QRW51)
