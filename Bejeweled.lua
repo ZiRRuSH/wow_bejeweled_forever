@@ -4938,6 +4938,51 @@ local function Se(l, w)
     l.elapsed = 0;
 end
 
+-- Experimental smooth movement: 40 Hz simulation, client-frame interpolation.
+Bejeweled.smoothAnimation =
+    not BejeweledProfile
+    or not BejeweledProfile.settings
+    or BejeweledProfile.settings.smoothAnimation ~= false
+
+function Bejeweled:RestoreAnimationAnchors(animator)
+    if not animator.renderAnchors then return end
+    for frame, point in pairs(animator.renderAnchors) do
+        if frame.animated then
+            frame:ClearAllPoints()
+            frame:SetPoint(point[1], point[2], point[3], point[4], point[5])
+        end
+    end
+end
+
+function Bejeweled:CaptureAnimationAnchors(animator)
+    local points = {}
+    for _, frame in ipairs(animator.animationStack) do
+        if frame.animated and frame:GetNumPoints() == 1 then
+            points[frame] = { frame:GetPoint(1) }
+        end
+    end
+    return points
+end
+
+function Bejeweled:InterpolateAnimationAnchors(animator, alpha)
+    if not animator.previousAnchors or not animator.renderAnchors then return end
+    for frame, current in pairs(animator.renderAnchors) do
+        local previous = animator.previousAnchors[frame]
+        if frame.animated and previous
+            and previous[1] == current[1] and previous[2] == current[2]
+            and previous[3] == current[3]
+            and type(previous[4]) == "number" and type(previous[5]) == "number"
+            and type(current[4]) == "number" and type(current[5]) == "number" then
+            if previous[4] ~= current[4] or previous[5] ~= current[5] then
+                frame:ClearAllPoints()
+                frame:SetPoint(current[1], current[2], current[3],
+                    previous[4] + (current[4] - previous[4]) * alpha,
+                    previous[5] + (current[5] - previous[5]) * alpha)
+            end
+        end
+    end
+end
+
 local function A()
     local e = CreateFrame("Frame", "", UIParent, "BackdropTemplate")
     e:SetWidth(1)
@@ -4949,7 +4994,32 @@ local function A()
     e.delay = .025
     e.glowFrameDir = 1
     e.glowFrame = 1
-    e:SetScript("OnUpdate", Se)
+    e:SetScript("OnUpdate", function(animator, elapsed)
+        Bejeweled:RestoreAnimationAnchors(animator)
+        if not Bejeweled.smoothAnimation then
+            animator.renderAnchors = nil
+            animator.previousAnchors = nil
+            animator.smoothElapsed = 0
+            Se(animator, elapsed)
+            return
+        end
+        if not Bejeweled.isShown then
+            animator.renderAnchors = nil
+            animator.previousAnchors = nil
+            animator.smoothElapsed = 0
+            animator.elapsed = 0
+            return
+        end
+        animator.smoothElapsed = math.min((animator.smoothElapsed or 0) + elapsed, 0.2)
+        while animator.smoothElapsed >= 0.025 do
+            animator.previousAnchors = Bejeweled:CaptureAnimationAnchors(animator)
+            animator.elapsed = 0
+            Se(animator, 0.025)
+            animator.renderAnchors = Bejeweled:CaptureAnimationAnchors(animator)
+            animator.smoothElapsed = animator.smoothElapsed - 0.025
+        end
+        Bejeweled:InterpolateAnimationAnchors(animator, animator.smoothElapsed / 0.025)
+    end)
     e:SetScript("OnEvent", ze)
     e:RegisterEvent("PLAYER_ENTERING_WORLD")
     e.movingGems = 0
@@ -5306,6 +5376,17 @@ local function E()
     Bejeweled.minimap = t;
 end
 
+function Bejeweled:RefreshLayout()
+    if not self.window or not self.window.UpdateLayout then return end
+    self.window:UpdateLayout()
+    if self.window.layoutRefreshPending then return end
+    self.window.layoutRefreshPending = true
+    C_Timer.After(0, function()
+        Bejeweled.window.layoutRefreshPending = nil
+        Bejeweled.window:UpdateLayout()
+    end)
+end
+
 local function g()
     local t = CreateFrame("Frame", "BejeweledWindow", UIParent, "BackdropTemplate")
     t:SetWidth(q)
@@ -5343,6 +5424,7 @@ local function g()
         n.activeTime = 0
     end)
     t:SetScript("OnShow", function(t)
+        Bejeweled:RefreshLayout()
         Bejeweled.isShown = true
         Bejeweled.window:SetAlpha(BejeweledProfile.settings.gameAlpha)
         if not Bejeweled:MouseIsOver(Bejeweled.window) then
@@ -5447,7 +5529,13 @@ local function g()
     end)
     t:SetResizable(true)
     t:SetResizeBounds(q / 2, me / 2, q * 1.5, me * 1.5)
-    t:SetScript("OnSizeChanged", function(t)
+    -- Shared layout pass; no additional main-chunk locals.
+    t.UpdateLayout = function(t)
+        if t.layoutUpdating or not Bejeweled.gameBoard
+            or not Bejeweled.summaryScreen or not Bejeweled.levelBar
+            or not t.logo or not t.icon or not t.menuButton then return end
+        if t:GetWidth() <= 0 then return end
+        t.layoutUpdating = true
         local o = t:GetWidth() / q
         local a = 1
         local i = 1
@@ -5477,7 +5565,9 @@ local function g()
         a = r / l[1]
         Bejeweled.gameBoard:SetScale(o)
         Bejeweled.summaryScreen:SetScale(o)
-        t:SetHeight((w + 4) * o + 110);
+        if math.abs(t:GetHeight() - ((w + 4) * o + 110)) > 0.01 then
+            t:SetHeight((w + 4) * o + 110)
+        end
         if not (n.gameOver) and Bejeweled.levelBar then
             Bejeweled.levelBar:SetScore(Bejeweled.levelBar.score or (0));
         elseif Bejeweled.levelBar then
@@ -5488,6 +5578,10 @@ local function g()
         t.icon:SetWidth(64 * i)
         t.icon:SetHeight(64 * i)
         Bejeweled.resizeUpdate = true;
+        t.layoutUpdating = nil
+    end
+    t:SetScript("OnSizeChanged", function(t)
+        t:UpdateLayout()
     end)
     local n = CreateFrame("Frame", "BejeweledShowHideButton", UIParent, "BackdropTemplate")
     n:SetWidth(1)
@@ -7681,6 +7775,33 @@ function Bejeweled:Initialize_OptionsScreen()
     end)
     t:Hide()
     Bejeweled.optionsScreen = t
+
+    -- Smooth movement preference, stored with the existing addon settings.
+    if BejeweledProfile.settings.smoothAnimation == nil then
+        BejeweledProfile.settings.smoothAnimation = true
+    end
+    Bejeweled.smoothAnimation = BejeweledProfile.settings.smoothAnimation == true
+    t.smoothCheckbox = CreateFrame("CheckButton", "BejeweledSmoothAnimationCheckbox", t, "UICheckButtonTemplate")
+    t.smoothCheckbox:SetSize(21, 21)
+    t.smoothCheckbox:SetPoint("TOPLEFT", t, "TOPLEFT", 12, -7)
+    t.smoothCheckbox.Text:SetText("Smooth animation")
+    t.smoothCheckbox.Text:SetFont(STANDARD_TEXT_FONT, 11)
+    t.smoothCheckbox:SetHitRectInsets(0, -100, 0, 0)
+    t.smoothCheckbox:SetChecked(Bejeweled.smoothAnimation)
+    t.smoothCheckbox:SetScript("OnClick", function(button)
+        Bejeweled.smoothAnimation = button:GetChecked() == true
+        BejeweledProfile.settings.smoothAnimation = Bejeweled.smoothAnimation
+    end)
+    t.smoothCheckbox:SetScript("OnShow", function(button)
+        button:SetChecked(Bejeweled.smoothAnimation == true)
+    end)
+    t.smoothCheckbox:SetScript("OnEnter", function(button)
+        GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+        GameTooltip:SetText("Smooth animation")
+        GameTooltip:AddLine("Smooths movement between animation steps. Disable to compare with the original animation behavior.", 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    t.smoothCheckbox:SetScript("OnLeave", function() GameTooltip:Hide() end)
     local n = Bejeweled:CreateCaption(0, 0, "Options", t, 20, 1, .85, .1, true)
     n:ClearAllPoints()
     n:SetPoint("Top", 0, -10)
@@ -8417,4 +8538,5 @@ local function k()
 end
 
 k()
+Bejeweled:RefreshLayout()
 local e;
