@@ -2,7 +2,7 @@
 
 This is my personal fork of [Nighthawk42's Bejeweled addon](https://github.com/Nighthawk42/wow_bejeweled), with compatibility fixes for WoW Forever.
 
-Full credit goes to PopCap Games, Inc. for the original game and addon, and to [Nighthawk42](https://github.com/Nighthawk42/wow_bejeweled) and the upstream contributors for maintaining it for modern WoW clients. This fork simply adds WoW Forever support until the upstream project implements support.
+Full credit goes to PopCap Games, Inc. for the original game and addon, and to [Nighthawk42](https://github.com/Nighthawk42/wow_bejeweled) and the upstream contributors for maintaining it for modern WoW clients. This fork simply adds WoW Forever support until the upstream project implements it.
 
 For other WoW clients, please use the [original project](https://github.com/Nighthawk42/wow_bejeweled).
 
@@ -18,9 +18,9 @@ For other WoW clients, please use the [original project](https://github.com/Nigh
 
 1. Download this fork.
 2. Place the `Bejeweled` folder in your WoW Forever client's `Interface/AddOns/` directory.
-3. Restart the game and enable the addon.
+3. Restart the game and enable the addon (or `/reload` should work fine in-game).
 
-Open the game with `/bej` or `/bejeweled`.
+Open the game with the minimap icon, `/bej` or `/bejeweled`.
 
 ## Documentation & License
 
