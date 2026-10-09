@@ -13,6 +13,20 @@ For other WoW clients, please use the [original project](https://github.com/Nigh
 - Updated guild rank-up announcements and manual score bragging for modern API.
 - Fixed minimap icon compatibility (ie. EllesmereUI's AddOn Bag).
 - Disabled legacy world-event skill achievements that caused restricted-event errors. Game-based skill progression remains available.
+- Added category and icon to in-game AddOns menu.
+
+### Graphics & Options Update
+
+- Fixed an issue where graphics sometimes failed to appear until the window was resized.
+- Added smoother movement for gems, particles, and floating score text, with visual updates at the WoW client’s framerate.
+- Added a **Smooth animation** checkbox under Menu → Options.
+- Smoothing is enabled by default and can be toggled immediately, with the preference saved between sessions.
+
+### Notes
+- Smoothing is experimental; sprite-sheet effects retain their original animation cadence.
+- Timer behavior is unchanged. Possible timed-mode drift is still under investigation.
+
+**Known limitation:** Legacy skill achievements tied to WoW activities, such as combat and looting, are disabled to prevent restricted-event errors. Bejeweled’s game-based skill progression remains available.
 
 ## Installation
 
