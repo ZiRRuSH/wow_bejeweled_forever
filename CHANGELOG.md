@@ -8,6 +8,18 @@ All notable changes and updates to the Bejeweled addon for World of Warcraft.
 - Fixed errors when opening the game and moving the cursor in or out of the game window.
 - Updated guild rank-up announcements and manual score bragging for the current chat API.
 - Fixed minimap icon compatibility.
+- Added category and icon to in-game AddOns menu.
+
+### Graphics & Options Update
+
+- Fixed an issue where graphics sometimes failed to appear until the window was resized.
+- Added smoother movement for gems, particles, and floating score text, with visual updates at the WoW client’s framerate.
+- Added a **Smooth animation** checkbox under Menu → Options.
+- Smoothing is enabled by default and can be toggled immediately, with the preference saved between sessions.
+
+### Notes
+- Smoothing is experimental; sprite-sheet effects retain their original animation cadence.
+- Timer behavior is unchanged. Possible timed-mode drift is still under investigation.
 
 **Known limitation:** Legacy skill achievements tied to WoW activities, such as combat and looting, are disabled to prevent restricted-event errors. Bejeweled’s game-based skill progression remains available.
 
