@@ -1,5 +1,5 @@
 local Bejeweled = Bejeweled or {}
-Bejeweled.version = "Version 1.60.1"
+Bejeweled.version = "Version 12.1.0"
 Bejeweled.splashDisplayTime = 2
 local t = "Interface\\AddOns\\Bejeweled"
 local l = "Interface\\AddOns\\Bejeweled\\images\\"
@@ -1613,12 +1613,8 @@ function Bejeweled:VariablesLoaded()
     BejeweledProfile.skill.guildList = BejeweledProfile.skill.guildList or { c = 0 }
     Bejeweled:UpdateSavedVariablesDatabase()
     Bejeweled:Initialize_OptionsScreen()
-
-    -- WoW Forever compatibility: this legacy Feats of Skill watcher dynamically
-    -- registers protected gameplay events and triggers ADDON_ACTION_FORBIDDEN.
-    -- The minigame itself does not depend on this optional tracking system.
+    -- Forever: disable restricted legacy world-event skill tracking.
     -- Bejeweled:LoadAchievementEvents()
-
     Bejeweled.LoadAchievementEvents = nil
     Bejeweled.Initialize_OptionsScreen = nil
     Bejeweled.CreateCheckbox = nil
@@ -2382,19 +2378,26 @@ function Bejeweled:TotalTime(t)
     return e;
 end
 
-function Bejeweled:Print(o, n, e, t)
-    DEFAULT_CHAT_FRAME:AddMessage(o, n, e, t)
-end
 
--- WoW Forever compatibility: Retail no longer exposes MouseIsOver as a global.
+-- Forever compatibility: table methods avoid the main chunk's 200-local limit.
 function Bejeweled:MouseIsOver(frame)
-    if MouseIsOver then
-        return MouseIsOver(frame)
-    end
+    if MouseIsOver then return MouseIsOver(frame) end
     if C_WidgetUtil and C_WidgetUtil.IsMouseOverFrame then
         return C_WidgetUtil.IsMouseOverFrame(frame)
     end
+    if frame and frame.IsMouseOver then return frame:IsMouseOver() end
     return false
+end
+
+function Bejeweled:SendChatMessage(...)
+    if C_ChatInfo and C_ChatInfo.SendChatMessage then
+        return C_ChatInfo.SendChatMessage(...)
+    end
+    if SendChatMessage then return SendChatMessage(...) end
+end
+
+function Bejeweled:Print(o, n, e, t)
+    DEFAULT_CHAT_FRAME:AddMessage(o, n, e, t)
 end
 
 local function Se(t)
@@ -5208,7 +5211,7 @@ local function O()
 end
 
 local function E()
-    local t = CreateFrame("Frame", "BejeweledMinimapIcon", Minimap)
+    local t = CreateFrame("Button", "BejeweledMinimapIcon", Minimap)
     t:SetWidth(33)
     t:SetHeight(33)
     t:SetFrameStrata("HIGH")
@@ -6509,9 +6512,9 @@ local function B()
         local e = Bejeweled.summaryScreen
         local t = GetChannelName(BejeweledProfile.settings.defaultPublish)
         if (t > 0) then
-            SendChatMessage(e.bragString, "CHANNEL", nil, t)
+            Bejeweled:SendChatMessage(e.bragString, "CHANNEL", nil, t)
         else
-            SendChatMessage(e.bragString, BejeweledProfile.settings.defaultPublish);
+            Bejeweled:SendChatMessage(e.bragString, BejeweledProfile.settings.defaultPublish);
         end
         e.bragString = nil
         e.bragScreen:Hide()
@@ -6775,7 +6778,7 @@ local function u()
                                         else
                                             t = t .. " ";
                                         end
-                                        SendChatMessage(t .. Bejeweled.const.skillDataRanks[BejeweledProfile.skill.rank] .. " in Bejeweling Skill!", "GUILD");
+                                        Bejeweled:SendChatMessage(t .. Bejeweled.const.skillDataRanks[BejeweledProfile.skill.rank] .. " in Bejeweling Skill!", "GUILD");
                                     end
                                 end
                             else
