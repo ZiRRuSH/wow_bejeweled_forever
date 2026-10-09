@@ -33,4 +33,4 @@ Open the game with `/bej` or `/bejeweled`.
 
 Support the upstream maintainers:
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/P5P21QRW51)
+[![Support upstream on Ko-fi](https://img.shields.io/badge/Support%20upstream-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/P5P21QRW51)
