@@ -1,6 +1,7 @@
 ## Interface: 16001
-## Title: Bejeweled
-## Version: 12.1.0
+## Title: Bejeweled Forever
+## IconTexture: Interface\AddOns\Bejeweled\images\windowIcon
+## Version: 1.60.1
 ## Notes: The popular game Bejeweled, for World of Warcraft!
 ## Author: PopCap Games, Inc.
 ## X-ArcadePanel: getglobal("BejeweledWindow"):Show();
@@ -8,5 +9,17 @@
 ## X-ArcadePanelDescription: The popular game Bejeweled, now for World of Warcraft!\n\n(c) 2000, 2008 PopCap Games Inc. All right reserved.
 ## SavedVariables: BejeweledData
 ## SavedVariablesPerCharacter: BejeweledProfile
+
+## Category: Minigames
+## Category-deDE: Minispiele
+## Category-esES: Minijuegos
+## Category-esMX: Minijuegos
+## Category-frFR: Mini-jeux
+## Category-itIT: Minigiochi
+## Category-koKR: 미니게임
+## Category-ptBR: Minijogos
+## Category-ruRU: Мини-игры
+## Category-zhCN: 迷你游戏
+## Category-zhTW: 迷你遊戲
 
 Bejeweled.lua
