@@ -17,7 +17,7 @@ For other WoW clients, please use the [original project](https://github.com/Nigh
 ## Installation
 
 1. Download this fork.
-2. Place the `Bejeweled` folder in your WoW Forever client's `Interface/AddOns/` directory.
+2. Place the `Bejeweled` folder in your WoW Forever client's `/_classic_beta_/Interface/AddOns/` directory.
 3. Restart the game and enable the addon (or `/reload` should work fine in-game).
 
 Open the game with the minimap icon, `/bej` or `/bejeweled`.
