@@ -2,6 +2,15 @@
 
 All notable changes and updates to the Bejeweled addon for World of Warcraft.
 
+## [1.60.1 - 10/2026] WoW Forever Compatibility Update
+
+- Updated the addon to load on WoW Forever.
+- Fixed errors when opening the game and moving the cursor in or out of the game window.
+- Updated guild rank-up announcements and manual score bragging for the current chat API.
+- Fixed minimap icon compatibility.
+
+**Known limitation:** Legacy skill achievements tied to WoW activities, such as combat and looting, are disabled to prevent restricted-event errors. Bejeweled’s game-based skill progression remains available.
+
 ## [12.1.0] - 2026
 
 - **Midnight Migration**: Updated TOC interface version for World of Warcraft: Midnight (12.1.0 / 120100).
