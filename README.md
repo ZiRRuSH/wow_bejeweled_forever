@@ -32,6 +32,7 @@ This AddOn works with retail and Forever (and maybe other clients but I haven't 
 
 1. Download this fork.
 2. Place the `Bejeweled` folder in your WoW Forever client's `/_classic_beta_/Interface/AddOns/` directory.
+   - For retail place the folder in `/_retail_/Interface/AddOns`
 3. Restart the game and enable the addon (or `/reload` should work fine in-game).
 
 Open the game with the minimap icon, `/bej` or `/bejeweled`.
