@@ -4,7 +4,7 @@ This is my personal fork of [Nighthawk42's Bejeweled addon](https://github.com/N
 
 Full credit goes to PopCap Games, Inc. for the original game and addon, and to [Nighthawk42](https://github.com/Nighthawk42/wow_bejeweled) and the upstream contributors for maintaining it for modern WoW clients. This fork simply adds WoW Forever support until the upstream project implements it.
 
-For other WoW clients, please use the [original project](https://github.com/Nighthawk42/wow_bejeweled).
+This AddOn works with retail and Forever (and maybe other clients but I haven't tested), for other WoW clients please use the [original project](https://github.com/Nighthawk42/wow_bejeweled).
 
 ## WoW Forever Changes
 
