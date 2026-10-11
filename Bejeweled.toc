@@ -1,4 +1,4 @@
-## Interface: 16001
+## Interface: 16001, 120100
 ## Title: Bejeweled Forever
 ## IconTexture: Interface\AddOns\Bejeweled\images\windowIcon
 ## Version: 1.60.1
