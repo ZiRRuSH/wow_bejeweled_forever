@@ -26,7 +26,7 @@ This AddOn works with retail and Forever (and maybe other clients but I haven't 
 - Smoothing is experimental; sprite-sheet effects retain their original animation cadence.
 - Timer behavior is unchanged. Possible timed-mode drift is still under investigation.
 
-**Known limitation:** Legacy skill achievements tied to WoW activities, such as combat and looting, are disabled to prevent restricted-event errors. Bejeweled’s game-based skill progression remains available.
+**Known limitation:** Legacy skill achievements tied to WoW activities are disabled to prevent restricted-event errors. Bejeweled’s game-based skill progression remains available.
 
 ## Installation
 
