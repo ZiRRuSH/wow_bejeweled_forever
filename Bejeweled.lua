@@ -1979,7 +1979,8 @@ local function Q(e, n, o)
     e:SetHeight(p)
     e:SetPoint("Topleft", e.x, -e.y)
     e.selector:Hide()
-    e.glowLevel = 0;
+    e.glowLevel = 0
+    if e.glow then e.glow:SetAlpha(0) end
 end
 
 local function Ke()
@@ -2625,16 +2626,25 @@ local function lt(a, r, o, i, n, d)
     if t then
         B(a.lightningQueue, 1)
     else
-        t = Bejeweled.foreground:CreateTexture(nil, "ARTWORK")
+        -- DrawRouteLine no longer exists, so the bolt is drawn with native Line
+        -- objects (Frame:CreateLine), 128 thick like the old route line.
+        t = Bejeweled.foreground:CreateLine(nil, "ARTWORK")
+        t.isLine = true -- Lines use start/end points, so the anchor smoothing skips them
         t:SetTexture(l .. "lightning")
-        t.highlight = Bejeweled.foreground:CreateTexture(nil, "OVERLAY")
-        t.highlight:SetTexture(l .. "lightning");
+        t:SetThickness(128)
+        t.highlight = Bejeweled.foreground:CreateLine(nil, "OVERLAY")
+        t.highlight:SetTexture(l .. "lightning")
+        t.highlight:SetThickness(128)
     end
     t:SetVertexColor(unpack(he[d]))
     t.fxType = We
     t.fxFrame = 1
-	-- FixMe:  DrawRouteLine no longer exists.  This is what generates the 'Lightning' effect when you use an 'Ultra' gem.  The gem still works, but the effect is now missing.
-    -- DrawRouteLine(t, Bejeweled.gameBoard, r, -o, i, -n, 128, "TOPLEFT") DrawRouteLine(t.highlight, Bejeweled.gameBoard, r, -o, i, -n, 128, "TOPLEFT") t:Show()
+    local board = Bejeweled.gameBoard
+    t:SetStartPoint("TOPLEFT", board, r, -o)
+    t:SetEndPoint("TOPLEFT", board, i, -n)
+    t.highlight:SetStartPoint("TOPLEFT", board, r, -o)
+    t.highlight:SetEndPoint("TOPLEFT", board, i, -n)
+    t:Show()
     t.highlight:Show()
     return t;
 end
@@ -4266,8 +4276,6 @@ local function Se(l, w)
     local _ = et * l.elapsed
     local P = wt * l.elapsed
     local I = Gt * l.elapsed
-    local t = et * .025
-    local t = 20
     if (n.levelingUp) then
         if (n.mode ~= c) then
             k = k * 2.5
@@ -4301,8 +4309,10 @@ local function Se(l, w)
     for e = 1, a do
         for n = 1, h do
             t = o[e][n]
-            t.glowLevel = 0
-            t.glow:SetAlpha(0);
+            if t.glowLevel ~= 0 then
+                t.glowLevel = 0
+                t.glow:SetAlpha(0);
+            end
         end
     end
     f = 1
@@ -4944,24 +4954,48 @@ Bejeweled.smoothAnimation =
     or not BejeweledProfile.settings
     or BejeweledProfile.settings.smoothAnimation ~= false
 
+-- Puts frames that interpolation moved back at their simulated position.
+-- Frames it didn't touch (stationary animated frames) are skipped entirely.
 function Bejeweled:RestoreAnimationAnchors(animator)
-    if not animator.renderAnchors then return end
-    for frame, point in pairs(animator.renderAnchors) do
-        if frame.animated then
-            frame:ClearAllPoints()
-            frame:SetPoint(point[1], point[2], point[3], point[4], point[5])
+    local anchors = animator.renderAnchors
+    if not anchors then return end
+    for frame, point in pairs(anchors) do
+        if frame.smoothMoved then
+            frame.smoothMoved = nil
+            if frame.animated then
+                frame:ClearAllPoints()
+                frame:SetPoint(point[1], point[2], point[3], point[4], point[5])
+            end
         end
     end
 end
 
-function Bejeweled:CaptureAnimationAnchors(animator)
-    local points = {}
+-- Fills `anchors` with the single anchor of every animated frame. The tables
+-- from the previous fill are recycled through a pool instead of being garbage.
+function Bejeweled:CaptureAnimationAnchors(animator, anchors)
+    local pool = animator.anchorPool
+    if not pool then
+        pool = {}
+        animator.anchorPool = pool
+    end
+    if anchors then
+        for frame, record in pairs(anchors) do
+            pool[#pool + 1] = record
+            anchors[frame] = nil
+        end
+    else
+        anchors = {}
+    end
     for _, frame in ipairs(animator.animationStack) do
-        if frame.animated and frame:GetNumPoints() == 1 then
-            points[frame] = { frame:GetPoint(1) }
+        if frame.animated and not frame.isLine and frame:GetNumPoints() == 1 then
+            local n = #pool
+            local record = pool[n] or {}
+            pool[n] = nil
+            record[1], record[2], record[3], record[4], record[5] = frame:GetPoint(1)
+            anchors[frame] = record
         end
     end
-    return points
+    return anchors
 end
 
 function Bejeweled:InterpolateAnimationAnchors(animator, alpha)
@@ -4974,10 +5008,12 @@ function Bejeweled:InterpolateAnimationAnchors(animator, alpha)
             and type(previous[4]) == "number" and type(previous[5]) == "number"
             and type(current[4]) == "number" and type(current[5]) == "number" then
             if previous[4] ~= current[4] or previous[5] ~= current[5] then
-                frame:ClearAllPoints()
+                -- The frame has exactly this one anchor, so setting the same
+                -- point again replaces it; no ClearAllPoints needed.
                 frame:SetPoint(current[1], current[2], current[3],
                     previous[4] + (current[4] - previous[4]) * alpha,
                     previous[5] + (current[5] - previous[5]) * alpha)
+                frame.smoothMoved = true
             end
         end
     end
@@ -5012,11 +5048,13 @@ local function A()
         end
         animator.smoothElapsed = math.min((animator.smoothElapsed or 0) + elapsed, 0.2)
         while animator.smoothElapsed >= 0.025 do
-            animator.previousAnchors = Bejeweled:CaptureAnimationAnchors(animator)
+            -- After the restore, frames sit exactly where the last step left them,
+            -- so the previous "render" capture doubles as this step's "previous".
+            animator.previousAnchors, animator.renderAnchors = animator.renderAnchors, animator.previousAnchors
             animator.elapsed = 0
-            Se(animator, 0.025)
-            animator.renderAnchors = Bejeweled:CaptureAnimationAnchors(animator)
             animator.smoothElapsed = animator.smoothElapsed - 0.025
+            Se(animator, 0.025)
+            animator.renderAnchors = Bejeweled:CaptureAnimationAnchors(animator, animator.renderAnchors)
         end
         Bejeweled:InterpolateAnimationAnchors(animator, animator.smoothElapsed / 0.025)
     end)
